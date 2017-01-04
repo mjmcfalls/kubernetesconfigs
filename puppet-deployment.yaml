@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: puppet-server
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: puppet-server
+    spec:
+      containers:
+      - name: puppet
+        image: puppet/puppetserver

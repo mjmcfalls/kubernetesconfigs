@@ -1,0 +1,33 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: influxdb-deploy
+  labels:
+    task: dashboard
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        task: dashboard
+    spec:
+      volumes:
+      - name: influxdb-storage
+        persistentVolumeClaim:
+          claimName: influxdb-storage
+      containers:
+      - name: influxdb
+        image: library/influxdb
+        ports:
+        - containerPort: 8083
+          hostPort: 8083
+        - containerPort: 8086
+          hostPort: 8086
+        volumeMounts:
+        - name: influxdb-storage
+          mountPath: /var/lib/influxdb
+        env:
+        - name: INFLUXDB_GRAPHITE_ENABLED
+          value: "true"
+        - name: INFLUXDB_ADMIN_ENABLED
+          value: "true"
