@@ -12,7 +12,7 @@ spec:
         task: dashboard
     spec:
       volumes:
-      - name: influxdb-storage
+      - name: influxdb-storage-pd
         persistentVolumeClaim:
           claimName: influxdb-storage
       containers:
@@ -24,8 +24,8 @@ spec:
         - containerPort: 8086
           hostPort: 8086
         volumeMounts:
-        - name: influxdb-storage
-          mountPath: /var/lib/influxdb
+        - name: influxdb-storage-pd
+          mountPath: "/var/lib/"
         env:
         - name: INFLUXDB_GRAPHITE_ENABLED
           value: "true"

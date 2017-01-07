@@ -1,36 +1,32 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: grafana
+  name: grafana-deploy
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        task: monitoring
+        task: grafana-dashboard
     spec:
       volumes:
-      - name: grafana-storage
+      - name: grafana-storage-pvc
         persistentVolumeClaim:
           claimName: grafana-storage
       containers:
       - name: grafana
-        image: gcr.io/google_containers/heapster_grafana:v3.1.1
+        image: grafana/grafana
         ports:
           - containerPort: 3000
             protocol: TCP
         volumeMounts:
-        - name: grafana-storage
-          mountPath: /mnt/grafana
+        - name: grafana-storage-pvc
+          mountPath: /var
         env:
         - name: INFLUXDB_HOST
           value: monitoring-influxdb
         - name: GRAFANA_PORT
           value: "3000"
-          # The following env variables are required to make Grafana accessible via
-          # the kubernetes api-server proxy. On production clusters, we recommend
-          # removing these env variables, setup auth for grafana, and expose the grafana
-          # service using a LoadBalancer or a public IP.
         - name: GF_AUTH_BASIC_ENABLED
           value: "false"
         - name: GF_AUTH_ANONYMOUS_ENABLED
