@@ -18,20 +18,24 @@ spec:
       containers:
       - name: influxdb
         image: library/influxdb
+        securityContext:
+          fsGroup: 65534
         ports:
         - containerPort: 8083
           hostPort: 8083
         - containerPort: 8086
           hostPort: 8086
-        - containerPort: 25826
-          hostPort: 25826
+        securityContext:
+          runAsUser: 65534 
         volumeMounts:
         - name: influxdb-storage-pd
-          mountPath: /usr/share/collectd
+          mountPath: /var/lib/influxdb
         env:
+        - name: INFLUXDB_GRAPHITE_ENABLED
+          value: "true"
         - name: INFLUXDB_ADMIN_ENABLED
           value: "true"
-        - name: INFLUXDB_COLLECTD_ENABLED
-          value: "true"
-        - name: INFLUXDB_COLLECTD_BIND_ADDRESS
-          value: ":25826"
+        - name: INFLUXDB_DATA_DIR
+          value: "/var/lib/influxdb/data"
+        - name: INFLUXDB_COLLECTD_TYPESDB
+          value: "/var/lib/"
