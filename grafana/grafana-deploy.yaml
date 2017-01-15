@@ -2,6 +2,8 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: grafana-deploy
+  labels:
+    task: grafana-dashboard
 spec:
   replicas: 1
   template:
@@ -10,18 +12,20 @@ spec:
         task: grafana-dashboard
     spec:
       volumes:
-      - name: grafana-storage-pvc
+      - name: grafana-pod-storage
         persistentVolumeClaim:
-          claimName: grafana-storage
+          claimName: grafana-pvc
+      securityContext:
+        fsGroup: 65534
       containers:
       - name: grafana
         image: grafana/grafana
+        volumeMounts:
+        - name: grafana-pod-storage
+          mountPath: /var
         ports:
           - containerPort: 3000
             protocol: TCP
-        volumeMounts:
-        - name: grafana-storage-pvc
-          mountPath: /var
         env:
         - name: INFLUXDB_HOST
           value: monitoring-influxdb
@@ -34,5 +38,4 @@ spec:
         - name: GF_AUTH_ANONYMOUS_ORG_ROLE
           value: Admin
         - name: GF_SERVER_ROOT_URL
-          # value: /api/v1/proxy/namespaces/kube-system/services/monitoring-grafana/
           value: /
