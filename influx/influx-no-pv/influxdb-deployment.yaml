@@ -1,0 +1,37 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: influxdb-deploy
+  labels:
+    task: dashboard
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        task: dashboard
+    spec:
+      volumes:
+      - name: influxdb-storage-pd
+        persistentVolumeClaim:
+          claimName: influxdb-storage
+      containers:
+      - name: influxdb
+        image: library/influxdb
+        ports:
+        - containerPort: 8083
+          hostPort: 8083
+        - containerPort: 8086
+          hostPort: 8086
+        - containerPort: 25826
+          hostPort: 25826
+        volumeMounts:
+        - name: influxdb-storage-pd
+          mountPath: /usr/share/collectd
+        env:
+        - name: INFLUXDB_ADMIN_ENABLED
+          value: "true"
+        - name: INFLUXDB_COLLECTD_ENABLED
+          value: "true"
+        - name: INFLUXDB_COLLECTD_BIND_ADDRESS
+          value: ":25826"

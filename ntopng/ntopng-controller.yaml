@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: ntopng
+spec:
+  replicas: 1
+  selector:
+    name: ntopng
+  template:
+    metadata:
+      labels:
+        name: ntopng
+    spec:
+      containers:
+      - name: ntopng
+        image: lucaderi/ntopng-docker
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            cpu: "0.1"
